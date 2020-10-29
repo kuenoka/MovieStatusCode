@@ -23,7 +23,7 @@ class ViewController: UIViewController {
   }
   
   func getAnimes(searchText: String) {
-    ViewModel.shared.getAnimes(urlString: "https://api.jikan.moe/v3/search/anime?q=\(searchText)") { (result) in
+    ViewModel.shared.getAnimes(urlString: "https://api.jikan.moe/v3/search/animen?q=\(searchText)") { (result) in
       switch result {
       case .success( _):
         DispatchQueue.main.async {
@@ -98,4 +98,5 @@ extension ViewController: UISearchBarDelegate {
 
 enum HandleNetwork: String {
   case noWifi = "500"
+  case badURL = "404"
 }
