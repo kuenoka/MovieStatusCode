@@ -23,7 +23,7 @@ class ViewController: UIViewController {
   }
   
   func getAnimes(searchText: String) {
-    ViewModel.shared.getAnimes(urlString: "https://api.jikan.moe/v3/search/animen?q=\(searchText)") { (result) in
+    ViewModel.shared.getAnimes(urlString: "https://api.jikan.moe/v3/search/anime?q=\(searchText)") { (result) in
       switch result {
       case .success( _):
         DispatchQueue.main.async {
@@ -38,7 +38,18 @@ class ViewController: UIViewController {
   }
 
   func displayError(code: Int) {
-    let alert = UIAlertController(title: "\(code)", message: "Unable to Load, Check Server", preferredStyle: .alert)
+    let possibleError = ResponseError(rawValue: "\(code)")
+    var title = ""
+    switch possibleError {
+      case .badURL:
+        title = "Bad URL"
+      case .noWifi:
+        title = "No Wifi"
+      default:
+        title = "Unkwown Error"
+    }
+    
+    let alert = UIAlertController(title: "Status Code: \(title)", message: "Unable to Load Data!!!!", preferredStyle: .alert)
     let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
     alert.addAction(cancel)
     present(alert, animated: true)
@@ -91,12 +102,11 @@ extension ViewController: UISearchBarDelegate {
     if let searched = searchBar.text {
       getAnimes(searchText: searched)
     }
-    
   }
   
 }
 
-enum HandleNetwork: String {
+enum ResponseError: String {
+  case badURL = "400"
   case noWifi = "500"
-  case badURL = "404"
 }
