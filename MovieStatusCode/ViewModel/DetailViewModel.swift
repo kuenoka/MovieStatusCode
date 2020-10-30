@@ -9,7 +9,6 @@ import Foundation
 
 class DetailViewModel {
   static let shared = DetailViewModel()
-  
   private var result: Results? = nil
   private var imageData: Data? = nil
   

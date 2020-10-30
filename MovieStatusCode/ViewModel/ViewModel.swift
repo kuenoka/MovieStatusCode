@@ -15,9 +15,13 @@ class ViewModel {
   
   func getAnimes(urlString: String, completionHandler: @escaping (Result<[Results], NetworkCode>) -> ()) {
     
-    guard let url = URL(string: urlString) else { return }
+    guard let url = URL(string: urlString) else {
+      let code = NetworkCode(code: 500)
+      completionHandler(.failure(code))
+      return
+    }
     
-    APIHandler.shared.getData(url: url) { (data, response, error) in
+    APIHandler.shared.getData(url: url) { [weak self] (data, response, error) in
       
       guard let httpResponse = response as? HTTPURLResponse else {
         let code = NetworkCode(code: 500)
@@ -35,7 +39,7 @@ class ViewModel {
       
       do {
         let jsonObj = try JSONDecoder().decode(Animes.self, from: data)
-        self.results = jsonObj.results
+        self?.results = jsonObj.results
         completionHandler(.success(jsonObj.results))
       } catch {
         print(error.localizedDescription)

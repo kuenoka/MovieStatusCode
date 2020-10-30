@@ -8,7 +8,6 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-  
   var titleLabel = UILabel()
   var descriptionLabel = UILabel()
   var imgView = UIImageView()
@@ -17,6 +16,7 @@ class DetailViewController: UIViewController {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
     view.backgroundColor = .white
+    navigationItem.title = "Anime Details"
     setConstraint()
     getImage()
   }
@@ -27,13 +27,14 @@ class DetailViewController: UIViewController {
     view.addSubview(descriptionLabel)
     
     titleLabel.text = DetailViewModel.shared.getResult()?.title
+    titleLabel.textAlignment = .center
     descriptionLabel.text = DetailViewModel.shared.getResult()?.synopsis
     descriptionLabel.numberOfLines = 0
     
     imgView.translatesAutoresizingMaskIntoConstraints = false
     imgView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
     imgView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-    imgView.topAnchor.constraint(equalTo: view.topAnchor, constant: 88).isActive = true
+    imgView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
     imgView.heightAnchor.constraint(equalTo: view.widthAnchor).isActive = true
     
     titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -48,11 +49,11 @@ class DetailViewController: UIViewController {
   }
   
   func getImage() {
-    DetailViewModel.shared.getImage { data in
+    DetailViewModel.shared.getImage { [weak self] data in
       guard let data = data else { return }
       let image = UIImage(data: data)
       DispatchQueue.main.async {
-        self.imgView.image = image
+        self?.imgView.image = image
       }
     }
   }

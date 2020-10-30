@@ -16,22 +16,24 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
     view.backgroundColor = .white
+    navigationItem.title = "Search Anime"
     setTableConstrains()
     tblView.dataSource = self
     tblView.delegate = self
     searchBar.delegate = self
+    searchBar.placeholder = "Enter anime name"
   }
   
   func getAnimes(searchText: String) {
-    ViewModel.shared.getAnimes(urlString: "https://api.jikan.moe/v3/search/anime?q=\(searchText)") { (result) in
+    ViewModel.shared.getAnimes(urlString: "https://api.jikan.moe/v3/search/anime?q=\(searchText)") { [weak self] result in
       switch result {
       case .success( _):
         DispatchQueue.main.async {
-          self.tblView.reloadData()
+          self?.tblView.reloadData()
         }
       case .failure(let error):
         DispatchQueue.main.async {
-          self.displayError(code: error.code)
+          self?.displayError(code: error.code)
         }
       }
     }
@@ -43,8 +45,8 @@ class ViewController: UIViewController {
     switch possibleError {
       case .badURL:
         title = "Bad URL"
-      case .noWifi:
-        title = "No Wifi"
+      case .serverError:
+        title = "Server Error"
       default:
         title = "Unkwown Error"
     }
@@ -56,11 +58,11 @@ class ViewController: UIViewController {
   }
   
   func setTableConstrains() {
-    view.addSubview(tblView)
     view.addSubview(searchBar)
+    view.addSubview(tblView)
     
     searchBar.translatesAutoresizingMaskIntoConstraints = false
-    searchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: 88).isActive = true
+    searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
     searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
     searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     
@@ -74,7 +76,6 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: UITableViewDataSource {
-  
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return ViewModel.shared.numberOfAnime()
   }
@@ -84,7 +85,6 @@ extension ViewController: UITableViewDataSource {
     cell.textLabel?.text = ViewModel.shared.getAnime(at: indexPath.row).title
     return cell
   }
-  
 }
 
 extension ViewController: UITableViewDelegate {
@@ -97,16 +97,14 @@ extension ViewController: UITableViewDelegate {
 }
 
 extension ViewController: UISearchBarDelegate {
-  
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     if let searched = searchBar.text {
       getAnimes(searchText: searched)
     }
   }
-  
 }
 
 enum ResponseError: String {
   case badURL = "400"
-  case noWifi = "500"
+  case serverError = "500"
 }

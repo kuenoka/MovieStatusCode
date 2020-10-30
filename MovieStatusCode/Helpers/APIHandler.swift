@@ -8,7 +8,6 @@
 import Foundation
 
 class APIHandler {
-  
   static let shared = APIHandler()
   
   func getData(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
@@ -18,5 +17,4 @@ class APIHandler {
   }
   
   private init() {}
-  
 }
